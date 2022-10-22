@@ -23,5 +23,4 @@ public class User {
     private Role role;
     private LocalDateTime create_date;
     private LocalDateTime update_date;
-
 }

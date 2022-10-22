@@ -6,6 +6,8 @@ import com.stussy.stussyclonehyelyeon20220929.aop.annotation.ValidAspect;
 import com.stussy.stussyclonehyelyeon20220929.dto.account.RegisterReqDto;
 import com.stussy.stussyclonehyelyeon20220929.dto.CMRespDto;
 import com.stussy.stussyclonehyelyeon20220929.dto.validation.ValidationSequence;
+import com.stussy.stussyclonehyelyeon20220929.service.AccountService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +29,18 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/api/account")
 @RestController
+@RequiredArgsConstructor
 public class AccountApi {
+
+    private final AccountService accountService;
 
     @LogAspect
     @ValidAspect
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Validated(ValidationSequence.class) @RequestBody RegisterReqDto registerReqDto, BindingResult bindingResult){
+    public ResponseEntity<?> register(@Validated(ValidationSequence.class) @RequestBody RegisterReqDto registerReqDto, BindingResult bindingResult) throws Exception{
+
+        accountService.checkDuplicateEmail(registerReqDto.getEmail());
+
         // @RequestBody : json으로 날릴려고
         // @Valid : 유효성 체크를 해준다
         // @Valid를 주고 Dto에 사용하면 BindingResult 객체가 따라온다
@@ -92,7 +100,7 @@ public class AccountApi {
 
 //        log.info("{}", registerReqDto);
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().body(new CMRespDto<>(1, "successfully registered", registerReqDto));
     }
 
 }
